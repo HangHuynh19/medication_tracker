@@ -1,0 +1,29 @@
+type Prescription {
+  id: ID!
+  issuedDate: Date!
+  issuedBy: User!
+  expiryDate: Date!
+  medicineList: [Medicine]!
+}
+
+type Query {
+  prescriptions: [Prescription]!
+  prescription(id: ID!): Prescription!
+}
+
+type Mutation {
+  createPrescription(
+    issuedDate: Date!
+    issuedBy: ID!
+    expiryDate: Date!
+    medicineList: [ID]!
+  ): Prescription!
+  updatePrescription(
+    id: ID!
+    issuedDate: Date
+    issuedBy: ID
+    expiryDate: Date
+    medicineList: [ID]
+  ): Prescription!
+  deletePrescription(id: ID!): Prescription!
+}

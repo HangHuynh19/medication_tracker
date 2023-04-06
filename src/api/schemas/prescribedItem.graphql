@@ -1,0 +1,17 @@
+type PrescribedItem {
+  id: ID!
+  medicine: Medicine!
+  dosage: String!
+  intakeTime: [String]!
+}
+
+type Query {
+  prescribedItems: [PrescribedItem]
+  prescribedItem(id: ID!): PrescribedItem
+}
+
+type Mutation {
+  createPrescribedItem(medicineId: ID!, dosage: String!, intakeTime: [String]!): PrescribedItem
+  updatePrescribedItem(id: ID!, medicineId: ID!, dosage: String, intakeTime: [String]): PrescribedItem
+  deletePrescribedItem(id: ID!): PrescribedItem
+}
