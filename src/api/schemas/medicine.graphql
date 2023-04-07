@@ -1,20 +1,20 @@
 type Medicine {
   id: ID!
   medicineName: String!
-  purpose: String!
-  sideEffects: String!
+  purpose: String
+  sideEffects: String
 }
 
 type Query {
   medicines: [Medicine]
-  medicine(id: ID!): Medicine
+  medicineById(id: ID!): Medicine
 }
 
 type Mutation {
   createMedicine(
     medicineName: String!
-    purpose: String!
-    sideEffects: String!
+    purpose: String
+    sideEffects: String
   ): Medicine
   updateMedicine(
     id: ID!

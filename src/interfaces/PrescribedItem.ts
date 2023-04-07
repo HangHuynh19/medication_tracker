@@ -1,7 +1,8 @@
 import {Document, Types} from 'mongoose';
+import {Medicine} from './Medicine';
 
 interface PrescribedItem extends Document {
-  medicine: Types.ObjectId;
+  medicine: Types.ObjectId | Medicine;
   dosage: number;
   intakeTime: string[];
 }

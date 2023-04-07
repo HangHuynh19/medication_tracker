@@ -1,14 +1,17 @@
+scalar Date
+
 type Prescription {
   id: ID!
   issuedDate: Date!
-  issuedBy: User!
+  #issuedBy: User!
+  issuedBy: String!
   expiryDate: Date!
-  medicineList: [Medicine]!
+  medicineList: [PrescribedItem]!
 }
 
 type Query {
   prescriptions: [Prescription]!
-  prescription(id: ID!): Prescription!
+  prescriptionById(id: ID!): Prescription!
 }
 
 type Mutation {

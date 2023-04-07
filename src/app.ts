@@ -8,9 +8,10 @@ import {
 import cors from 'cors';
 import {expressMiddleware} from '@apollo/server/express4';
 import authenticate from './functions/authenticate';
-import {AppContext} from './interfaces/AppContext';
+//import {AppContext} from './interfaces/AppContext';
 import {errorHandler, notFound} from './middlewares';
 import typeDefs from './api/schemas';
+import resolvers from './api/resolvers';
 
 const app = express();
 
@@ -41,8 +42,8 @@ const app = express();
     app.use(
       '/graphql',
       express.json(),
-      cors<cors.CorsRequest>()
-      //expressMiddleware(server, {context: async ({req}) => authenticate(req)})
+      cors<cors.CorsRequest>(),
+      expressMiddleware(server)
     );
     app.use(notFound);
     app.use(errorHandler);

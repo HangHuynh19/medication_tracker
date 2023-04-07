@@ -7,11 +7,20 @@ type PrescribedItem {
 
 type Query {
   prescribedItems: [PrescribedItem]
-  prescribedItem(id: ID!): PrescribedItem
+  prescribedItemById(id: ID!): PrescribedItem
 }
 
 type Mutation {
-  createPrescribedItem(medicineId: ID!, dosage: String!, intakeTime: [String]!): PrescribedItem
-  updatePrescribedItem(id: ID!, medicineId: ID!, dosage: String, intakeTime: [String]): PrescribedItem
+  createPrescribedItem(
+    medicine: ID!
+    dosage: String!
+    intakeTime: [String]!
+  ): PrescribedItem
+  updatePrescribedItem(
+    id: ID!
+    medicine: ID!
+    dosage: String
+    intakeTime: [String]
+  ): PrescribedItem
   deletePrescribedItem(id: ID!): PrescribedItem
 }

@@ -1,4 +1,4 @@
-import {Document, Types} from 'mongoose';
+/*import {Document, Types} from 'mongoose';
 
 interface User extends Document {
   name: string;
@@ -8,4 +8,4 @@ interface User extends Document {
   associatedClients: Types.ObjectId[];
 }
 
-export {User};
+export {User};*/

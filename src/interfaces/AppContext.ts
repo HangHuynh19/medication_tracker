@@ -1,5 +1,5 @@
 //TODO: Add the interface for the context
 
-interface AppContext {}
+/*interface AppContext {}
 
-export {AppContext};
+export {AppContext};*/
