@@ -1,3 +1,4 @@
+require('dotenv').config();
 import express from 'express';
 import helmet from 'helmet';
 import {ApolloServer} from '@apollo/server';
@@ -7,11 +8,11 @@ import {
 } from '@apollo/server/plugin/landingPage/default';
 import cors from 'cors';
 import {expressMiddleware} from '@apollo/server/express4';
-import authenticate from './functions/authenticate';
-//import {AppContext} from './interfaces/AppContext';
 import {errorHandler, notFound} from './middlewares';
 import typeDefs from './api/schemas';
 import resolvers from './api/resolvers';
+import authorize from './functions/authorize';
+import {AppContext} from './interfaces/AppContext';
 
 const app = express();
 
@@ -24,7 +25,7 @@ const app = express();
       })
     );
 
-    const server = new ApolloServer({
+    const server = new ApolloServer<AppContext>({
       typeDefs,
       resolvers,
       introspection: true,
@@ -35,7 +36,7 @@ const app = express();
             })
           : ApolloServerPluginLandingPageLocalDefault(),
       ],
-      includeStacktraceInErrorResponses: true,
+      includeStacktraceInErrorResponses: process.env.NODE_ENV !== 'production',
     });
     await server.start();
 
@@ -43,7 +44,9 @@ const app = express();
       '/graphql',
       express.json(),
       cors<cors.CorsRequest>(),
-      expressMiddleware(server)
+      expressMiddleware(server, {
+        context: async ({req}) => authorize(req),
+      })
     );
     app.use(notFound);
     app.use(errorHandler);

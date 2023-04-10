@@ -7,9 +7,8 @@ const prescriptionSchema = new mongoose.Schema<Prescription>({
     required: true,
   },
   issuedBy: {
-    //type: mongoose.Schema.Types.ObjectId,
-    type: String,
-    //ref: 'User',
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   expiryDate: {
@@ -19,6 +18,11 @@ const prescriptionSchema = new mongoose.Schema<Prescription>({
   medicineList: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'PrescribedItem',
+    required: true,
+  },
+  patientId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
 });

@@ -1,11 +1,14 @@
-/*import {Document, Types} from 'mongoose';
-
-interface User extends Document {
-  name: string;
+interface User {
+  id: string;
+  username: string;
   email: string;
-  password: string;
-  role: string;
-  associatedClients: Types.ObjectId[];
+  avatar: string;
+  token?: string;
 }
 
-export {User};*/
+interface UserIdWithToken {
+  id: string;
+  token: string;
+}
+
+export {User, UserIdWithToken};

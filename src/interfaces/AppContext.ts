@@ -1,5 +1,7 @@
-//TODO: Add the interface for the context
+import {UserIdWithToken} from './User';
 
-/*interface AppContext {}
+interface AppContext {
+  userIdWithToken?: UserIdWithToken;
+}
 
-export {AppContext};*/
+export {AppContext};
