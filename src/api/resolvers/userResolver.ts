@@ -1,217 +1,133 @@
-import {ApolloClient, InMemoryCache, gql, useQuery} from '@apollo/client';
 import {UserIdWithToken} from '../../interfaces/User';
 import {Prescription} from '../../interfaces/Prescription';
+import {doGraphQLFetch} from '../../functions/fetch';
+import {
+  deleteUserQuery,
+  getAllUserQuery,
+  getUserByIdQuery,
+  loginQuery,
+  registerQuery,
+  updateUserQuery,
+} from '../../utils/queries';
+import {GraphQLError} from 'graphql';
 
-const client = new ApolloClient({
-  uri: process.env.AUTH_URL,
-  cache: new InMemoryCache(),
-});
+const authServerURL = process.env.AUTH_SERVER_URL as string;
 
 export default {
   Prescription: {
     issuedBy: async (parent: Prescription) => {
-      const query = `
-      query {
-        user(id: "${parent.issuedBy}") {
-          id
-          username
-          email
-          avatar
-        }
-      }
-    `;
-      const {data} = await client.query({
-        query: gql(query),
+      const user = await doGraphQLFetch(authServerURL, getUserByIdQuery, {
+        userId: parent.issuedBy,
       });
-      return data.user;
+      return user.user;
     },
     patientId: async (parent: Prescription) => {
-      const query = `
-      query {
-        user(id: "${parent.patientId}") {
-          id
-          username
-          email
-          avatar
-        }
-      }
-    `;
-      const {data} = await client.query({
-        query: gql(query),
+      const user = await doGraphQLFetch(authServerURL, getUserByIdQuery, {
+        userId: parent.patientId,
       });
-      return data.user;
+      return user.user;
     },
   },
 
   Query: {
     users: async () => {
-      const query = `
-        query {
-          users {
-            id
-            username
-            email
-            avatar
-            token
-          }
-        }
-      `;
-      const {data} = await client.query({
-        query: gql(query),
-      });
-      return data.users;
+      const user = await doGraphQLFetch(authServerURL, getAllUserQuery, {});
+      return user.users;
     },
     user: async (_parent: unknown, args: {id: string}) => {
-      const query = `
-      query {
-        user(id: "${args.id}") {
-          id
-          username
-          email
-          avatar
-          token
-        }
-      }
-    `;
-      const {data} = await client.query({
-        query: gql(query),
+      const user = await doGraphQLFetch(authServerURL, getUserByIdQuery, {
+        userId: args.id,
       });
-      return data.user;
+      return user.user;
     },
   },
   Mutation: {
     register: async (
       _parent: unknown,
       args: {
-        username: string;
-        email: string;
-        password: string;
-        avatar: string;
+        input: {
+          username: string;
+          email: string;
+          password: string;
+          avatar: string;
+        };
       }
     ) => {
-      const query = `
-      mutation {
-        register(input: {
-          username: "${args.username}",
-          email: "${args.email}",
-          password: "${args.password}",
-          avatar: "${args.avatar}"
-        }) {
-          id
-          username
-          email
-          avatar
-          token
-        }
-      }
-    `;
-      const {data} = await client.mutate({
-        mutation: gql(query),
+      const user = await doGraphQLFetch(authServerURL, registerQuery, {
+        input: args.input,
       });
-      return data.register;
+      return user.register;
     },
     login: async (
       _parent: unknown,
       args: {
-        email: string;
-        password: string;
-      },
-      user: UserIdWithToken
-    ) => {
-      const query = `
-      mutation {
-        login(email: "${args.email}", password: "${args.password}") {
-          id
-          username
-          email
-          avatar
-          token
-        }
+        input: {
+          email: string;
+          password: string;
+        };
       }
-    `;
-      const headers = {
-        authorization: `Bearer ${user.token}`,
-      };
-      const {data} = await client.mutate({
-        mutation: gql(query),
-        context: {
-          headers,
-        },
+    ) => {
+      const loginUser = await doGraphQLFetch(authServerURL, loginQuery, {
+        input: args.input,
       });
-      return data.login;
+      return loginUser.login;
     },
     updateUser: async (
       _parent: unknown,
       args: {
-        username: string;
-        email: string;
-        password: string;
-        avatar: string;
+        input: {
+          username: string;
+          email: string;
+          password: string;
+          avatar: string;
+        };
       },
       user: UserIdWithToken
     ) => {
-      let params = '';
-      if (args.username) {
-        params += `username: "${args.username}",`;
-      }
-      if (args.email) {
-        params += `email: "${args.email}",`;
-      }
-      if (args.password) {
-        params += `password: "${args.password}",`;
-      }
-      if (args.avatar) {
-        params += `avatar: "${args.avatar}"`;
+      const userFromDb = await doGraphQLFetch(authServerURL, getUserByIdQuery, {
+        userId: user.id,
+      });
+      if (!userFromDb.user) {
+        throw new GraphQLError('User not found', {
+          extensions: {
+            code: 'USER_NOT_FOUND',
+          },
+        });
       }
 
-      const query = `
-      mutation {
-        updateAvatar(${params}) {
-          id
-          username
-          email
-          avatar
-          token
-        }
-      }
-    `;
-      const headers = {
-        Authorization: `Bearer ${user.token}`,
+      const req = {
+        username: args.input.username
+          ? args.input.username
+          : userFromDb.user.username,
+        email: args.input.email ? args.input.email : userFromDb.user.email,
+        password: args.input.password
+          ? args.input.password
+          : userFromDb.user.password,
+        avatar: args.input.avatar ? args.input.avatar : userFromDb.user.avatar,
       };
-      const {data} = await client.mutate({
-        mutation: gql(query),
-        context: {
-          headers,
+      const updatedUser = await doGraphQLFetch(
+        authServerURL,
+        updateUserQuery,
+        {
+          input: req,
         },
-      });
-      return data.updateUser;
+        user.token
+      );
+
+      return updatedUser.updateUser;
     },
     deleteUser: async (
       _parent: unknown,
       _agrs: unknown,
       user: UserIdWithToken
     ) => {
-      const query = `
-        mutation {
-          deleteUser {
-            id
-            username
-            email
-            avatar
-            token
-          }
-        }
-      `;
-      const headers = {
-        Authorization: `Bearer ${user.token}`,
-      };
-      const {data} = await client.mutate({
-        mutation: gql(query),
-        context: {
-          headers,
-        },
-      });
-      return data.deleteUser;
+      const deletedUser = await doGraphQLFetch(
+        authServerURL,
+        deleteUserQuery,
+        {},
+        user.token
+      );
+      return deletedUser.deleteUser;
     },
   },
 };

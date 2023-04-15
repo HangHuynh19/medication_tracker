@@ -6,24 +6,24 @@ type User {
   token: String
 }
 
-type TokenMessage {
+type ResponseMessage {
   message: String!
   user: User!
 }
 
-input Credentials {
+input UserLogin {
   email: String!
   password: String!
 }
 
-input RegisterInput {
+input UserRegister {
   username: String!
   email: String!
   password: String!
   avatar: String
 }
 
-input UpdateUserInput {
+input UserUpdate {
   username: String
   email: String
   password: String
@@ -33,12 +33,12 @@ input UpdateUserInput {
 type Query {
   users: [User]
   userById(id: ID!): User
-  checkToken: TokenMessage
+  checkToken: ResponseMessage
 }
 
 type Mutation {
-  register(input: RegisterInput!): TokenMessage
-  login(input: Credentials!): TokenMessage
-  updateUser(input: UpdateUserInput!): TokenMessage
-  deleteUser: TokenMessage
+  register(input: UserRegister!): ResponseMessage
+  login(input: UserLogin!): ResponseMessage
+  updateUser(input: UserUpdate!): ResponseMessage
+  deleteUser: ResponseMessage
 }
