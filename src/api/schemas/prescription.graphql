@@ -3,10 +3,10 @@ scalar Date
 type Prescription {
   id: ID!
   issuedDate: Date!
-  #issuedBy: User!
-  issuedBy: String!
+  issuedBy: ID!
   expiryDate: Date!
   medicineList: [PrescribedItem]!
+  patientId: ID!
 }
 
 type Query {

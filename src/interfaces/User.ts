@@ -1,11 +1,30 @@
-/*import {Document, Types} from 'mongoose';
-
-interface User extends Document {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  associatedClients: Types.ObjectId[];
+enum Role {
+  PATIENT = 'patient',
+  HEALTHCARE_PROVIDER = 'healthcare_provider',
+  ADMIN = 'admin',
 }
 
-export {User};*/
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatar: string;
+  token?: string;
+}
+
+interface UserIdWithToken {
+  id: string;
+  token: string;
+  role: Role;
+}
+
+interface UserOutput {
+  id: string;
+  username: string;
+  email: string;
+  avatar: string;
+  role?: Role;
+  token?: string;
+}
+
+export {Role, User, UserIdWithToken, UserOutput};
